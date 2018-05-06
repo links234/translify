@@ -5,7 +5,7 @@ class TextTranslationEntryStyle extends StyleSheet {
     @styleRule
     panel = {
         background: "white",
-        width: "80vh",
+        width: "80vw",
         maxHeight: "400px",
         display: "flex",
         flexDirection: "column",

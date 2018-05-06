@@ -19064,7 +19064,7 @@ var Bundle = (function (exports) {
       initializer: function initializer() {
           return {
               background: "white",
-              width: "80vh",
+              width: "80vw",
               maxHeight: "400px",
               display: "flex",
               flexDirection: "column",
