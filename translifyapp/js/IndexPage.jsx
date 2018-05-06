@@ -1,5 +1,6 @@
 import {UI, Link, registerStyle} from "UI";
 import {StyleSheet, styleRule} from "UI";
+import {TextTranslationList} from "translation/TextTranslationList";
 
 
 class CardStyle extends StyleSheet {
@@ -123,31 +124,8 @@ export class IndexPage extends UI.Element {
     }
 
     render() {
-        let headerText = "Welcome Murtaza Alexandru!";
-        let bodyText = [
-            "This is the beginning of your stem project.",
-            <Quote text="translify" />,
-            <Quote text="Photo to document converter" hasQuotes={true} />,
-        ];
-
         return [
-            <div className={this.styleSheet.topContainer}>
-                <Card headerText={headerText} bodyText={bodyText} />
-            </div>,
-            <div className={this.styleSheet.bottomContainer}>
-                <p>
-                    Get started by editing <code>translifyapp/js/IndexPage.jsx</code>
-                </p>
-                <p>
-                    Save the code and just refresh the page.
-                </p>
-                <p>
-                    You can also use Stem components, for example - <code>TabArea</code>, <code>Panel</code>, <code>Button</code>
-                </p>
-                <p>
-                    Check the docs <Link href="https://stemjs.org/docs/" newTab>here</Link>.
-                </p>
-            </div>
+            <TextTranslationList style={{height: "100%"}}/>
         ];
     }
 }
