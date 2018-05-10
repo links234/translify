@@ -9,7 +9,7 @@ class TextTranslationEntryStyle extends StyleSheet {
         maxHeight: "400px",
         display: "flex",
         flexDirection: "column",
-        padding: "10px 20px",
+        padding: "10px 40px",
         boxShadow: "1px 1px 6px rgba(0,0,0,.5)",
         margin: "20px",
         borderRadius: "6px"
@@ -23,29 +23,34 @@ class TextTranslationEntryStyle extends StyleSheet {
 
     @styleRule
     contentContainer = {
-        display: "flex",
+        display: "block",
         padding: "20px 0",
         flexDirection: "row",
-        ">*": {
-            flex: "1",
-        },
+        height: "360px",
         flex: "1",
     };
 
     @styleRule
     imageContainer = {
         textAlign: "center",
+        width: "50%",
+        height: "100%",
+        display: "inline-block",
     };
 
     @styleRule
     image = {
         borderRadius: "4px",
-        height: "100%",
+        maxHeight: "100%",
+        maxWidth: "100%",
     };
 
     @styleRule
     textContainer = {
         overflow: "auto",
+        width: "50%",
+        maxHeight: "100%",
+        display: "inline-block",
     };
 
     @styleRule

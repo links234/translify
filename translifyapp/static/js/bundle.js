@@ -19068,7 +19068,7 @@ var Bundle = (function (exports) {
               maxHeight: "400px",
               display: "flex",
               flexDirection: "column",
-              padding: "10px 20px",
+              padding: "10px 40px",
               boxShadow: "1px 1px 6px rgba(0,0,0,.5)",
               margin: "20px",
               borderRadius: "6px"
@@ -19086,12 +19086,10 @@ var Bundle = (function (exports) {
       enumerable: true,
       initializer: function initializer() {
           return {
-              display: "flex",
+              display: "block",
               padding: "20px 0",
               flexDirection: "row",
-              ">*": {
-                  flex: "1"
-              },
+              height: "360px",
               flex: "1"
           };
       }
@@ -19099,7 +19097,10 @@ var Bundle = (function (exports) {
       enumerable: true,
       initializer: function initializer() {
           return {
-              textAlign: "center"
+              textAlign: "center",
+              width: "50%",
+              height: "100%",
+              display: "inline-block"
           };
       }
   }), _descriptor5$11 = _applyDecoratedDescriptor$18(_class$41.prototype, "image", [styleRule], {
@@ -19107,14 +19108,18 @@ var Bundle = (function (exports) {
       initializer: function initializer() {
           return {
               borderRadius: "4px",
-              height: "100%"
+              maxHeight: "100%",
+              maxWidth: "100%"
           };
       }
   }), _descriptor6$9 = _applyDecoratedDescriptor$18(_class$41.prototype, "textContainer", [styleRule], {
       enumerable: true,
       initializer: function initializer() {
           return {
-              overflow: "auto"
+              overflow: "auto",
+              width: "50%",
+              maxHeight: "100%",
+              display: "inline-block"
           };
       }
   }), _descriptor7$7 = _applyDecoratedDescriptor$18(_class$41.prototype, "text", [styleRule], {
