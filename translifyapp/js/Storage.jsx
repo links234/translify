@@ -89,7 +89,7 @@ export class UploadFilesModal extends ActionModal {
             return;
         }
 
-        let fileUploadRequest = Ajax.post("/storage/upload_request/", {
+        let fileUploadRequest = Ajax.post("/translate/", {
             dataType: "json",
             data: formData,
             cache: false,

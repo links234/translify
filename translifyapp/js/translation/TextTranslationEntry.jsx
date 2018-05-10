@@ -69,17 +69,15 @@ export class TextTranslationEntry extends Panel {
     }
 
     render() {
-        const [title, content, photoUrl] = ["getTitle", "getContent", "getPhotoUrl"].map(
-            func => this.options.translation[func]());
         const {styleSheet} = this;
         return [
-            <div className={styleSheet.title}>{title}</div>,
+            <div className={styleSheet.title}>{this.options.translation.title}</div>,
             <div className={styleSheet.contentContainer}>
                 <div className={styleSheet.imageContainer}>
-                    <Image className={styleSheet.image} src={photoUrl}/>
+                    <Image className={styleSheet.image} src={this.options.translation.photoUrl}/>
                 </div>
                 <div className={styleSheet.textContainer}>
-                    <div className={styleSheet.text}>{content}</div>
+                    <div className={styleSheet.text}>{this.options.translation.content}</div>
                 </div>
             </div>
         ];

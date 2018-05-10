@@ -4,6 +4,8 @@ from django.core import validators
 from django.utils import timezone
 from establishment.funnel.stream import StreamObjectMixin
 from establishment.accounts.models import AbstractStreamObjectUser
+from django.db import models
+from establishment.funnel.stream import StreamObjectMixin
 
 
 class UserManager(BaseUserManager):
@@ -66,3 +68,28 @@ class User(AbstractStreamObjectUser):
         error_messages={
             "unique": "A user with that username already exists.",
         })
+
+
+class TextTranslation(StreamObjectMixin):
+    translation = models.CharField(max_length=1024*64)
+    ext = models.CharField(max_length=16)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "TextTranslation"
+
+    def __str__(self):
+        return "TextTranslation-" + str(self.id)
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "title": "Entry #" + str(self.id),
+            "photoUrl": "http://localhost:8000/translation_image/" + str(self.id) + self.ext,
+            "content": self.translation,
+            "translation": self.translation,
+            "ext": self.ext,
+            "dateCreated": self.date_created,
+            "dateModified": self.date_modified
+        }

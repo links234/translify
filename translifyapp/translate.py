@@ -22,5 +22,3 @@ def getTranslatedLines(image):
 		result.append(line.text)
 	return ' '.join(result)
 
-
-print(getTranslatedLines("IMG_4140 2.JPG"))
