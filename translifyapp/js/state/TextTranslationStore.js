@@ -11,7 +11,7 @@ export class TextTranslation extends StoreObject {
 
     initMock() {
         this.title = ["Course 1", "Introduction to vrajeala", "How to rock like a roll", "X - a professional or beginner mistake?"]
-            [parseInt(Math.random() * 4)];
+            [Math.floor(Math.random() * 4)];
         this.photoUrl = [
             "http://www.aktual24.ro/wp-content/uploads/2016/10/document.jpg",
             "https://sites.fas.harvard.edu/~hpcws/august28,1980.JPG",

@@ -1,17 +1,12 @@
-import {UI} from "UI";
+import {UI, FileInput, Button, Direction, Orientation, Level} from "UI";
 import {NavManager} from "navmanager/NavManager";
-import {
-    BasicOrientedElement,
-    NavAnchoredNotifications,
-    NavElement,
-    NavLinkElement,
-    NavSection,
-    navSessionManager,
-} from "navmanager/NavElement";
-import {Direction, Orientation} from "UI";
+import {BasicOrientedElement, NavAnchoredNotifications, NavElement, NavLinkElement, NavSection, navSessionManager}
+    from "navmanager/NavElement";
 import {LoginModal} from "LoginModal";
 import {logout} from "Logout";
 import {FAIcon} from "ui/FontAwesome";
+import {NOOP_FUNCTION} from "Utils";
+import {ImageUpload} from "./ImageUpload";
 
 /*
  * This is the NavManager file of your app.
@@ -28,7 +23,7 @@ class AppNavManager extends NavManager {
         return [
             <NavSection anchor={Direction.LEFT} style={{margin: 0}}>
                 <NavLinkElement value="Home" href="/" />
-                <NavLinkElement value="Blog" href="/blog" />
+                <ImageUpload />
             </NavSection>
         ];
     }
