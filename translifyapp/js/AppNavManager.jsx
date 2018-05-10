@@ -6,7 +6,7 @@ import {LoginModal} from "LoginModal";
 import {logout} from "Logout";
 import {FAIcon} from "ui/FontAwesome";
 import {NOOP_FUNCTION} from "Utils";
-import {ImageUpload} from "./ImageUpload";
+import {UploadFilesModal} from "./Storage";
 
 /*
  * This is the NavManager file of your app.
@@ -23,7 +23,7 @@ class AppNavManager extends NavManager {
         return [
             <NavSection anchor={Direction.LEFT} style={{margin: 0}}>
                 <NavLinkElement value="Home" href="/" />
-                <ImageUpload />
+                <Button label="Upload image" onClick={() => UploadFilesModal.show()} />
             </NavSection>
         ];
     }

@@ -23,4 +23,4 @@ def getTranslatedLines(image):
 	return ' '.join(result)
 
 
-print(getTranslatedLines("s3.jpg"))
+print(getTranslatedLines("IMG_4140 2.JPG"))

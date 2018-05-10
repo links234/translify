@@ -5602,7 +5602,7 @@ var Bundle = (function (exports) {
       return Link;
   }(UI.Primitive("a"));
 
-  var Image$1 = function (_UI$Primitive2) {
+  var Image = function (_UI$Primitive2) {
       inherits(Image, _UI$Primitive2);
 
       function Image() {
@@ -19171,7 +19171,7 @@ var Bundle = (function (exports) {
                   UI.createElement(
                       "div",
                       { className: styleSheet.imageContainer },
-                      UI.createElement(Image$1, { className: styleSheet.image, src: photoUrl })
+                      UI.createElement(Image, { className: styleSheet.image, src: photoUrl })
                   ),
                   UI.createElement(
                       "div",
@@ -22887,7 +22887,7 @@ var Bundle = (function (exports) {
   };
 
   MarkupClassMap.addClass("Link", SafeUriEnhancer(Link, "href"));
-  MarkupClassMap.addClass("Image", SafeUriEnhancer(Image$1, "src"));
+  MarkupClassMap.addClass("Image", SafeUriEnhancer(Image, "src"));
 
   var MarkupEditor = function (_Panel) {
       inherits(MarkupEditor, _Panel);
@@ -35318,234 +35318,369 @@ var Bundle = (function (exports) {
       });
   }
 
-  var Canvas = function (_UI$Element) {
-      inherits(Canvas, _UI$Element);
-
-      function Canvas() {
-          classCallCheck(this, Canvas);
-          return possibleConstructorReturn(this, (Canvas.__proto__ || Object.getPrototypeOf(Canvas)).apply(this, arguments));
+  var StorageLimits = function () {
+      function StorageLimits() {
+          classCallCheck(this, StorageLimits);
       }
 
-      createClass(Canvas, [{
-          key: "getNodeType",
-          value: function getNodeType() {
-              return "canvas";
+      createClass(StorageLimits, null, [{
+          key: "userFileMaxCount",
+          value: function userFileMaxCount() {
+              if (!USER.isAuthenticated) {
+                  return 0;
+              }
+              if (USER.isSuperUser) {
+                  return -1;
+              }
+              return 512;
           }
       }, {
-          key: "getContext2D",
-          value: function getContext2D() {
-              return this.node.getContext("2d");
+          key: "userUploadMaxCount",
+          value: function userUploadMaxCount() {
+              if (!USER.isAuthenticated) {
+                  return 0;
+              }
+              if (USER.isSuperUser) {
+                  return -1;
+              }
+              return 16;
+          }
+      }, {
+          key: "userFileMaxSize",
+          value: function userFileMaxSize() {
+              if (!USER.isAuthenticated) {
+                  return 0;
+              }
+              if (USER.isSuperUser) {
+                  return -1;
+              }
+              return 128 * 1024 * 1024;
+          }
+      }, {
+          key: "userTotalMaxSize",
+          value: function userTotalMaxSize() {
+              if (!USER.isAuthenticated) {
+                  return 0;
+              }
+              if (USER.isSuperUser) {
+                  return 1024 * 1024 * 1024;
+              }
+              return 256 * 1024 * 1024;
+          }
+      }, {
+          key: "validateFileMaxCount",
+          value: function validateFileMaxCount(storageMeta, fileCount) {
+              var maxFileCount = StorageLimits.userFileMaxCount();
+              if (maxFileCount == -1) {
+                  return true;
+              }
+              return storageMeta.getFileCount() + fileCount <= maxFileCount;
+          }
+      }, {
+          key: "validateUploadMaxCount",
+          value: function validateUploadMaxCount(fileCount) {
+              var uploadMaxCount = StorageLimits.userUploadMaxCount();
+              if (uploadMaxCount == -1) {
+                  return true;
+              }
+              return fileCount <= uploadMaxCount;
+          }
+      }, {
+          key: "validateFileMaxSize",
+          value: function validateFileMaxSize(fileSize) {
+              var fileMaxSize = StorageLimits.userFileMaxSize();
+              if (fileMaxSize == -1) {
+                  return true;
+              }
+              return fileSize <= fileMaxSize;
+          }
+      }, {
+          key: "validateTotalMaxSize",
+          value: function validateTotalMaxSize(storageMeta, totalSize) {
+              var totalMaxSize = StorageLimits.userTotalMaxSize();
+              if (totalMaxSize == -1) {
+                  return true;
+              }
+              return storageMeta.getUsedSpace() + totalSize <= totalMaxSize;
           }
       }]);
-      return Canvas;
-  }(UI.Element);
+      return StorageLimits;
+  }();
 
-  var ImageUpload = function (_UI$Element2) {
-      inherits(ImageUpload, _UI$Element2);
+  var StorageMeta = function () {
+      function StorageMeta(usedSpace, fileCount) {
+          classCallCheck(this, StorageMeta);
 
-      function ImageUpload() {
-          classCallCheck(this, ImageUpload);
-          return possibleConstructorReturn(this, (ImageUpload.__proto__ || Object.getPrototypeOf(ImageUpload)).apply(this, arguments));
+          this.usedSpace = usedSpace;
+          this.fileCount = fileCount;
       }
 
-      createClass(ImageUpload, [{
-          key: "extraNodeAttributes",
-          value: function extraNodeAttributes(attr) {
-              get(ImageUpload.prototype.__proto__ || Object.getPrototypeOf(ImageUpload.prototype), "extraNodeAttributes", this).call(this, attr);
-              attr.setStyle("display", "inline-block");
+      createClass(StorageMeta, [{
+          key: "getUsedSpace",
+          value: function getUsedSpace() {
+              return this.usedSpace;
           }
       }, {
-          key: "render",
-          value: function render() {
-              var _this3 = this;
+          key: "getFileCount",
+          value: function getFileCount() {
+              return this.fileCount;
+          }
+      }]);
+      return StorageMeta;
+  }();
 
+  var PublicStorageFile = function (_StoreObject) {
+      inherits(PublicStorageFile, _StoreObject);
+
+      function PublicStorageFile() {
+          classCallCheck(this, PublicStorageFile);
+          return possibleConstructorReturn(this, (PublicStorageFile.__proto__ || Object.getPrototypeOf(PublicStorageFile)).apply(this, arguments));
+      }
+
+      createClass(PublicStorageFile, [{
+          key: "getStorageServer",
+          value: function getStorageServer() {
+              return StorageServerStore.get(this.storageServerId);
+          }
+      }, {
+          key: "getPublicURL",
+          value: function getPublicURL() {
+              var storageServer = this.getStorageServer();
+              return storageServer.domain + storageServer.urlBasePath + this.serverPath;
+          }
+      }]);
+      return PublicStorageFile;
+  }(StoreObject);
+
+  var PublicStorageFileStoreClass = function (_GenericObjectStore) {
+      inherits(PublicStorageFileStoreClass, _GenericObjectStore);
+
+      function PublicStorageFileStoreClass() {
+          classCallCheck(this, PublicStorageFileStoreClass);
+          return possibleConstructorReturn(this, (PublicStorageFileStoreClass.__proto__ || Object.getPrototypeOf(PublicStorageFileStoreClass)).apply(this, arguments));
+      }
+
+      createClass(PublicStorageFileStoreClass, [{
+          key: "getStorageMeta",
+          value: function getStorageMeta() {
+              var usedSpace = 0;
+              var files = this.all();
+              var _iteratorNormalCompletion = true;
+              var _didIteratorError = false;
+              var _iteratorError = undefined;
+
+              try {
+                  for (var _iterator = files[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                      var file = _step.value;
+
+                      usedSpace += file.size;
+                  }
+              } catch (err) {
+                  _didIteratorError = true;
+                  _iteratorError = err;
+              } finally {
+                  try {
+                      if (!_iteratorNormalCompletion && _iterator.return) {
+                          _iterator.return();
+                      }
+                  } finally {
+                      if (_didIteratorError) {
+                          throw _iteratorError;
+                      }
+                  }
+              }
+
+              return new StorageMeta(usedSpace, files.length);
+          }
+      }, {
+          key: "getAllIds",
+          value: function getAllIds() {
+              var files = this.all();
+              var ids = [];
+              var _iteratorNormalCompletion2 = true;
+              var _didIteratorError2 = false;
+              var _iteratorError2 = undefined;
+
+              try {
+                  for (var _iterator2 = files[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                      var file = _step2.value;
+
+                      ids.push(file.id);
+                  }
+              } catch (err) {
+                  _didIteratorError2 = true;
+                  _iteratorError2 = err;
+              } finally {
+                  try {
+                      if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                          _iterator2.return();
+                      }
+                  } finally {
+                      if (_didIteratorError2) {
+                          throw _iteratorError2;
+                      }
+                  }
+              }
+
+              return ids;
+          }
+      }]);
+      return PublicStorageFileStoreClass;
+  }(GenericObjectStore);
+
+  var PublicStorageFileStore = new PublicStorageFileStoreClass("PublicStorageFile", PublicStorageFile);
+
+  var StorageServer = function (_StoreObject2) {
+      inherits(StorageServer, _StoreObject2);
+
+      function StorageServer() {
+          classCallCheck(this, StorageServer);
+          return possibleConstructorReturn(this, (StorageServer.__proto__ || Object.getPrototypeOf(StorageServer)).apply(this, arguments));
+      }
+
+      return StorageServer;
+  }(StoreObject);
+
+  var StorageServerStore = new GenericObjectStore("StorageServer", StorageServer);
+
+  function humanFileSize(size) {
+      var i = Math.floor(Math.log(size) / Math.log(1024));
+      return (size / Math.pow(1024, i)).toFixed(2) * 1 + " " + ["B", "kB", "MB", "GB", "TB"][i];
+  }
+  var UploadFilesModal = function (_ActionModal) {
+      inherits(UploadFilesModal, _ActionModal);
+
+      function UploadFilesModal() {
+          classCallCheck(this, UploadFilesModal);
+          return possibleConstructorReturn(this, (UploadFilesModal.__proto__ || Object.getPrototypeOf(UploadFilesModal)).apply(this, arguments));
+      }
+
+      createClass(UploadFilesModal, [{
+          key: "getActionName",
+          value: function getActionName() {
+              return "Upload files";
+          }
+      }, {
+          key: "getBody",
+          value: function getBody() {
               return [UI.createElement(
-                  Button,
-                  { className: "pull-left", level: Level.INFO, label: "Import",
-                      style: { position: "relative", overflow: "hidden", display: "block", marginRight: "10px" } },
-                  UI.createElement(FileInput, { ref: "imageInput", fileTypes: ".jpg,.jpeg,.png", style: { position: "absolute", top: "0",
-                          right: "0", margin: "0", padding: "0", cursor: "pointer", opacity: "0", filter: "alpha(opacity=0)" } })
-              ), UI.createElement(NumberInput, { style: { display: "none" }, ref: "imageQualityInput", value: "1", min: "0", max: "1", step: "0.1", placeholder: "quality" }), UI.createElement(Button, { label: "Upload", style: { display: "block" }, onClick: function onClick() {
-                      return _this3.uploadImage();
-                  } }), UI.createElement("div", { ref: "finalURL" }), UI.createElement("div", { style: { display: "none" }, ref: "preview" }), UI.createElement("img", { ref: "compressedImage", style: { display: "none" } })];
+                  "div",
+                  null,
+                  UI.createElement(FileInput, { className: "pull-left", ref: "fileInput", multipleFiles: true })
+              ), UI.createElement("br", null), UI.createElement(
+                  ProgressBar,
+                  { level: Level.SUCCESS, ref: "progress" },
+                  "Progress"
+              )];
+          }
+      }, {
+          key: "getFooter",
+          value: function getFooter() {
+              var _this2 = this;
+
+              return [UI.createElement(TemporaryMessageArea, { ref: "messageArea" }), UI.createElement(
+                  ButtonGroup,
+                  null,
+                  UI.createElement(Button, { label: "Close", onClick: function onClick() {
+                          return _this2.hide();
+                      } }),
+                  UI.createElement(Button, { level: Level.SUCCESS, label: "Upload", onClick: function onClick() {
+                          return _this2.upload();
+                      } })
+              )];
           }
       }, {
           key: "onMount",
           value: function onMount() {
-              var _this4 = this;
+              var _this3 = this;
 
-              this.imageInput.addChangeListener(function () {
+              get(UploadFilesModal.prototype.__proto__ || Object.getPrototypeOf(UploadFilesModal.prototype), "onMount", this).call(this);
+
+              this.fileInput.addChangeListener(function () {
                   if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
                       console.error('The File APIs are not fully supported in this browser.');
                       return false;
                   }
-                  _this4.finalURL.eraseAllChildren();
-                  _this4.processImage();
+                  _this3.messageArea.clear();
+                  _this3.progress.set(0);
               });
           }
       }, {
-          key: "uploadImage",
-          value: function uploadImage() {
-              var _this5 = this;
+          key: "upload",
+          value: function upload() {
+              var _this4 = this;
 
-              if (!this.imageURI) {
+              var files = this.fileInput.getFiles();
+
+              if (files.length == 0) {
+                  this.messageArea.showMessage("Please select some files!", "red");
                   return;
               }
 
-              var _imageURI$split = this.imageURI.split(","),
-                  _imageURI$split2 = slicedToArray(_imageURI$split, 2),
-                  uriMeta = _imageURI$split2[0],
-                  byteString = _imageURI$split2[1];
-
-              var typeString = uriMeta.split(":")[1].split(";")[0];
-
-              var byteArray = new Uint8Array(byteString.length);
-
-              for (var i = 0; i < byteString.length; i += 1) {
-                  byteArray[i] = byteString.charCodeAt(i);
-              }
-
-              var imageBlob = new Blob([byteArray], { type: typeString });
-              if (imageBlob.size > 1e6) {
-                  console.log("Image too large! Aborting upload");
+              if (!StorageLimits.validateUploadMaxCount(files.length)) {
+                  this.messageArea.showMessage("You cannot upload more than " + StorageLimits.userUploadMaxCount() + " files at once!", "red");
                   return;
               }
 
+              var storageMeta = PublicStorageFileStore.getStorageMeta();
+
+              if (!StorageLimits.validateFileMaxCount(storageMeta, files.length)) {
+                  this.messageArea.showMessage("Completion of this request will exceed the maximum number of total files you can " + "store (" + StorageLimits.userFileMaxCount() + ").", "red");
+                  return;
+              }
+
+              var totalSize = 0;
               var formData = new FormData();
 
-              formData.append("image", imageBlob);
-
-              Ajax.post("/storage/upload_image/", {
-                  dataType: "json",
-                  data: formData,
-                  processData: false,
-                  contentType: false
-              }).then(function (data) {
-                  return _this5.finalURL.appendChild(UI.createElement(
-                      "a",
-                      { href: data.imageURL },
-                      "Successfully uploaded. Click to view."
-                  ));
-              });
-          }
-      }, {
-          key: "processImage",
-          value: function processImage() {
-              var _this6 = this;
-
-              while (this.preview.node.firstChild) {
-                  this.preview.node.removeChild(this.preview.node.firstChild);
+              for (var index = 0; index < files.length; ++index) {
+                  if (!StorageLimits.validateFileMaxSize(files[index].size)) {
+                      this.messageArea.showMessage("File " + files[index].name + " is too big (" + humanFileSize(files[index].size) + " while maximum size per file is " + humanFileSize(StorageLimits.userFileMaxSize()) + ").", "red");
+                      return;
+                  }
+                  formData.append(files[index].name, files[index]);
+                  totalSize += files[index].size;
               }
 
-              this.imageURI = null;
-
-              var file = this.imageInput.getFile();
-              if (!file) {
+              if (!StorageLimits.validateTotalMaxSize(storageMeta, totalSize)) {
+                  this.messageArea.showMessage("Completion of this request will exceed the maximum total size you can store (" + humanFileSize(StorageLimits.userTotalMaxSize()) + ").", "red");
                   return;
               }
 
-              if (!(file.type === "image/png" || file.type === "image/jpeg")) {
-                  alert("File " + file.name + " is not an valid image but a " + file.type);
-                  return false;
-              }
+              var fileUploadRequest = Ajax.post("/storage/upload_request/", {
+                  dataType: "json",
+                  data: formData,
+                  cache: false,
+                  processData: false,
+                  contentType: false
+              });
 
-              var reader = new FileReader();
-              reader.readAsArrayBuffer(file);
+              fileUploadRequest.then(function (data) {
+                  return _this4.hide();
+              }, function (error) {
+                  _this4.messageArea.showMessage("Error in uploading files: status:" + error.message, "red");
+              });
 
-              reader.onload = function (event) {
-                  // blob stuff
-                  var blob = new Blob([event.target.result]); // create blob...
-                  window.URL = window.URL || window.webkitURL;
-                  var blobURL = window.URL.createObjectURL(blob); // and get it's URL
-
-                  // helper Image object
-                  var image = new Image();
-                  image.src = blobURL;
-                  //preview.appendChild(image); // preview commented out, I am using the canvas instead
-                  image.onload = function () {
-                      // have to wait till it's loaded
-                      var resized = _this6.resizeImage(image); // send it to canvas
-                      var newinput = document.createElement("input");
-                      newinput.type = 'hidden';
-                      newinput.name = 'image';
-                      newinput.value = resized; // put result from canvas into new hidden input
-                      console.log("resized size", resized.toString().length * 6 / 8 / 1024, "kb");
-                      // console.log(resized);
-                      _this6.compressedImage.node.src = resized;
-
-                      _this6.imageURI = resized;
-                  };
-              };
-              this.imageInput.value = "";
+              fileUploadRequest.addProgressListener(function (event) {
+                  _this4.progressHandling(event);
+              });
           }
       }, {
-          key: "resizeImage",
-          value: function resizeImage(image) {
-              var canvas = document.createElement('canvas');
-              var context = canvas.getContext("2d");
-
-              var width = image.width;
-              var height = image.height;
-
-              var maxSize = 400;
-              var source = image;
-
-              // calculate the width and height, constraining the proportions
-              if (width > height) {
-                  if (width > maxSize) {
-                      if (width > maxSize * 4) {
-                          width /= 2;
-                          height /= 2;
-
-                          var auxCanvas = document.createElement("canvas");
-                          var auxContext = auxCanvas.getContext("2d");
-
-                          auxCanvas.width = width;
-                          auxCanvas.height = height;
-
-                          auxContext.drawImage(source, 0, 0, width, height);
-
-                          source = auxCanvas;
-                      }
-
-                      height = Math.round(height * maxSize / width);
-                      width = maxSize;
-                  }
-              } else {
-                  if (height > maxSize) {
-                      if (height > maxSize * 4) {
-                          width /= 2;
-                          height /= 2;
-
-                          var _auxCanvas = document.createElement("canvas");
-                          var _auxContext = _auxCanvas.getContext("2d");
-
-                          _auxCanvas.width = width;
-                          _auxCanvas.height = height;
-
-                          _auxContext.drawImage(source, 0, 0, width, height);
-
-                          source = _auxCanvas;
-                      }
-
-                      width = Math.round(width * maxSize / height);
-                      height = maxSize;
-                  }
+          key: "hide",
+          value: function hide() {
+              this.messageArea.clear();
+              this.progress.set(0);
+              get(UploadFilesModal.prototype.__proto__ || Object.getPrototypeOf(UploadFilesModal.prototype), "hide", this).call(this);
+          }
+      }, {
+          key: "progressHandling",
+          value: function progressHandling(event) {
+              if (event.lengthComputable) {
+                  this.progress.set(event.loaded / event.total);
               }
-
-              // resize the canvas and draw the image data into it
-              canvas.width = width;
-              canvas.height = height;
-              context.drawImage(source, 0, 0, width, height);
-
-              this.preview.node.appendChild(canvas); // do the actual resized preview
-              var quality = this.imageQualityInput.getValue() || 0.7;
-
-              return canvas.toDataURL("image/jpeg", quality); // get the data from canvas as 70% JPG (can be also PNG, etc.)
           }
       }]);
-      return ImageUpload;
-  }(UI.Element);
+      return UploadFilesModal;
+  }(ActionModal);
 
   /*
    * This is the NavManager file of your app.
@@ -35578,7 +35713,9 @@ var Bundle = (function (exports) {
                   NavSection,
                   { anchor: Direction.LEFT, style: { margin: 0 } },
                   UI.createElement(NavLinkElement, { value: "Home", href: "/" }),
-                  UI.createElement(ImageUpload, null)
+                  UI.createElement(Button, { label: "Upload image", onClick: function onClick() {
+                          return UploadFilesModal.show();
+                      } })
               )];
           }
       }, {
