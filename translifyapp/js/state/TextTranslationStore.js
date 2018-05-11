@@ -5,4 +5,6 @@ import {GlobalState} from "State";
 export class TextTranslation extends StoreObject {
 }
 
-export const TextTranslationStore = new GenericObjectStore("TextTranslation", TextTranslation);
+export const TextTranslationStore = new GenericObjectStore("texttranslation", TextTranslation);
+
+window.pulamea = TextTranslationStore;

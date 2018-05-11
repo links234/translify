@@ -11,6 +11,8 @@ translify/local_settings.py
 *.zip
 *.pyc
 *~
+*.JPG
+*.jpg
 
 # OS or IDE folders
 ._*

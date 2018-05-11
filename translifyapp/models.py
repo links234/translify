@@ -75,9 +75,14 @@ class TextTranslation(StreamObjectMixin):
     ext = models.CharField(max_length=16)
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
+    # title = models.CharField(max_length=64)
 
     class Meta:
         db_table = "TextTranslation"
+
+    @classmethod
+    def object_type(cls):
+        return "texttranslation"
 
     def __str__(self):
         return "TextTranslation-" + str(self.id)

@@ -12320,7 +12320,7 @@ var Bundle = (function (exports) {
                   this.enable();
               } else if (status === ActionStatus.RUNNING) {
                   this.disable();
-              } else if (status === ActionStatus.SUCCESS) {} else if (status === ActionStatus.FAILED) {}
+              }
 
               this.redraw();
           }
@@ -19813,7 +19813,9 @@ var Bundle = (function (exports) {
     return TextTranslation;
   }(StoreObject);
 
-  var TextTranslationStore = new GenericObjectStore("TextTranslation", TextTranslation);
+  var TextTranslationStore = new GenericObjectStore("texttranslation", TextTranslation);
+
+  window.pulamea = TextTranslationStore;
 
   var TextTranslationList = function (_UI$Element) {
       inherits(TextTranslationList, _UI$Element);
@@ -19828,6 +19830,16 @@ var Bundle = (function (exports) {
           value: function render() {
               return TextTranslationStore.all().map(function (x) {
                   return UI.createElement(TextTranslationEntry, { translation: x });
+              });
+          }
+      }, {
+          key: "onMount",
+          value: function onMount() {
+              var _this2 = this;
+
+              get(TextTranslationList.prototype.__proto__ || Object.getPrototypeOf(TextTranslationList.prototype), "onMount", this).call(this);
+              TextTranslationStore.addCreateListener(function () {
+                  return _this2.redraw();
               });
           }
       }]);
@@ -21588,13 +21600,6 @@ var Bundle = (function (exports) {
                           });
 
                           lineStart = i + 1;
-                      } else {
-                          // TODO: these dummies break code. Refactor!
-                          // newArray.push({
-                          //     isDummy: true,
-                          //     start: i,
-                          //     end: i + 1,
-                          // });
                       }
 
                       currentElement = {
@@ -21851,9 +21856,7 @@ var Bundle = (function (exports) {
                   for (var _iterator = arr[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                       var el = _step.value;
 
-                      if (el.isDummy) {
-                          // just skip it
-                      } else if (el.isString) {
+                      if (el.isDummy) ; else if (el.isString) {
                           result.push(content.substring(el.start, el.end));
                       } else {
                           result.push(el.content);
@@ -36200,9 +36203,7 @@ var Bundle = (function (exports) {
       }, {
           key: "onWebsocketMessage",
           value: function onWebsocketMessage(event) {
-              if (event.data === WebsocketSubscriber.HEARTBEAT_MESSAGE) {
-                  // TODO: keep track of the last heartbeat timestamp
-              } else {
+              if (event.data === WebsocketSubscriber.HEARTBEAT_MESSAGE) ; else {
                   var firstSpace = event.data.indexOf(" ");
                   var type = void 0,
                       payload = void 0;

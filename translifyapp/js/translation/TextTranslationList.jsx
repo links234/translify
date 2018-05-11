@@ -7,4 +7,9 @@ export class TextTranslationList extends UI.Element {
     render() {
         return TextTranslationStore.all().map(x => <TextTranslationEntry translation={x} />);
     }
+
+    onMount() {
+        super.onMount();
+        TextTranslationStore.addCreateListener(() => this.redraw());
+    }
 }
