@@ -22,20 +22,22 @@ global_renderer.render_single_page_app = render_single_page_app
 @single_page_app
 def index(request):
     state = State()
-    state.add_all(TextTranslation.objects.all())
-    return State()
+    state.add_all(TextTranslation.objects.filter(user=request.user))
+    return state
 
 
-def publish(event):
-    stream_name = "global-events"
+def publish(event, user):
+    stream_name = "global-" + str(user.id) + "-events"
     RedisStreamPublisher.publish_to_stream(stream_name, event, persistence=True)
 
 
-def create_translation(image):
+def create_translation(user, image):
     noext, ext = os.path.splitext(image.name)
 
     translation = TextTranslation()
     translation.ext = ext
+    translation.user = user
+    translation.title = "Test"
     translation.save()
 
     subprocess.call("mkdir -p uploads", shell=True)
@@ -50,9 +52,16 @@ def create_translation(image):
 
     translation.save()
 
-    publish(translation.make_create_event())
+    publish(translation.make_create_event(), user)
 
     return translation
+
+
+@login_required_ajax
+def user_state(request):
+    state = State()
+    state.add_all(TextTranslation.objects.filter(user=request.user))
+    return state.to_response(extra={"success": True})
 
 
 @login_required_ajax
@@ -64,7 +73,7 @@ def translate(request):
 
     state = State()
     for name, image in files:
-        public_storage_file = create_translation(image)
+        public_storage_file = create_translation(request.user, image)
         public_storage_file.add_to_state(state)
     return state.to_response(extra={"success": True})
 

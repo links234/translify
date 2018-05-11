@@ -75,7 +75,8 @@ class TextTranslation(StreamObjectMixin):
     ext = models.CharField(max_length=16)
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
-    # title = models.CharField(max_length=64)
+    title = models.CharField(max_length=256, default="Test")
+    user = models.ForeignKey(User, default=1)
 
     class Meta:
         db_table = "TextTranslation"
@@ -90,7 +91,7 @@ class TextTranslation(StreamObjectMixin):
     def to_json(self):
         return {
             "id": self.id,
-            "title": "Entry #" + str(self.id),
+            "title": self.title,
             "photoUrl": "http://localhost:8000/translation_image/" + str(self.id) + self.ext,
             "content": self.translation,
             "translation": self.translation,
