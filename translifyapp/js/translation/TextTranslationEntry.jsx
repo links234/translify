@@ -26,7 +26,7 @@ class TextTranslationEntryStyle extends StyleSheet {
         display: "block",
         padding: "20px 0",
         flexDirection: "row",
-        height: "360px",
+        maxHeight: "360px",
         flex: "1",
     };
 
@@ -41,7 +41,7 @@ class TextTranslationEntryStyle extends StyleSheet {
     @styleRule
     image = {
         borderRadius: "4px",
-        maxHeight: "100%",
+        maxHeight: "325px",
         maxWidth: "100%",
     };
 
@@ -50,7 +50,9 @@ class TextTranslationEntryStyle extends StyleSheet {
         overflow: "auto",
         width: "50%",
         maxHeight: "100%",
+        verticalAlign: "top",
         display: "inline-block",
+        paddingLeft: "15px",
     };
 
     @styleRule

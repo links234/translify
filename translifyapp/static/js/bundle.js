@@ -19089,7 +19089,7 @@ var Bundle = (function (exports) {
               display: "block",
               padding: "20px 0",
               flexDirection: "row",
-              height: "360px",
+              maxHeight: "360px",
               flex: "1"
           };
       }
@@ -19108,7 +19108,7 @@ var Bundle = (function (exports) {
       initializer: function initializer() {
           return {
               borderRadius: "4px",
-              maxHeight: "100%",
+              maxHeight: "325px",
               maxWidth: "100%"
           };
       }
@@ -19119,7 +19119,9 @@ var Bundle = (function (exports) {
               overflow: "auto",
               width: "50%",
               maxHeight: "100%",
-              display: "inline-block"
+              verticalAlign: "top",
+              display: "inline-block",
+              paddingLeft: "15px"
           };
       }
   }), _descriptor7$7 = _applyDecoratedDescriptor$18(_class$41.prototype, "text", [styleRule], {
@@ -19841,6 +19843,7 @@ var Bundle = (function (exports) {
               TextTranslationStore.addCreateListener(function () {
                   return _this2.redraw();
               });
+              Ajax.postJSON("/user_state/", {});
           }
       }]);
       return TextTranslationList;
@@ -35535,7 +35538,7 @@ var Bundle = (function (exports) {
                   "div",
                   null,
                   UI.createElement(FileInput, { className: "pull-left", ref: "fileInput", multipleFiles: true })
-              ), UI.createElement("br", null), UI.createElement(
+              ), UI.createElement(TextInput, { ref: "titleInput" }), UI.createElement("br", null), UI.createElement(
                   ProgressBar,
                   { level: Level.SUCCESS, ref: "progress" },
                   "Progress"
@@ -35614,6 +35617,8 @@ var Bundle = (function (exports) {
                   return;
               }
 
+              formData.append("title", this.titleInput.getValue());
+
               var fileUploadRequest = Ajax.post("/translate/", {
                   dataType: "json",
                   data: formData,
@@ -35681,9 +35686,9 @@ var Bundle = (function (exports) {
                   NavSection,
                   { anchor: Direction.LEFT, style: { margin: 0 } },
                   UI.createElement(NavLinkElement, { value: "Home", href: "/" }),
-                  UI.createElement(Button, { label: "Upload image", onClick: function onClick() {
+                  USER.isAuthenticated ? UI.createElement(Button, { label: "Upload image", onClick: function onClick() {
                           return UploadFilesModal.show();
-                      } })
+                      } }) : null
               )];
           }
       }, {

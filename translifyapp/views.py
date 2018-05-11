@@ -31,13 +31,13 @@ def publish(event, user):
     RedisStreamPublisher.publish_to_stream(stream_name, event, persistence=True)
 
 
-def create_translation(user, image):
+def create_translation(user, image, title):
     noext, ext = os.path.splitext(image.name)
 
     translation = TextTranslation()
     translation.ext = ext
     translation.user = user
-    translation.title = "Test"
+    translation.title = title
     translation.save()
 
     subprocess.call("mkdir -p uploads", shell=True)
@@ -70,10 +70,11 @@ def translate(request):
         return StorageError.NO_FILES
 
     files = list(request.FILES.items())
+    title = request.POST['title']
 
     state = State()
     for name, image in files:
-        public_storage_file = create_translation(request.user, image)
+        public_storage_file = create_translation(request.user, image, title)
         public_storage_file.add_to_state(state)
     return state.to_response(extra={"success": True})
 

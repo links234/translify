@@ -21,6 +21,7 @@ export class UploadFilesModal extends ActionModal {
         return [<div>
                 <FileInput className="pull-left" ref="fileInput" multipleFiles />
             </div>,
+            <TextInput ref="titleInput"/>,
             <br/>,
             <ProgressBar level={Level.SUCCESS} ref="progress">Progress</ProgressBar>
         ];
@@ -88,6 +89,8 @@ export class UploadFilesModal extends ActionModal {
                                          humanFileSize(StorageLimits.userTotalMaxSize()) + ").", "red");
             return;
         }
+
+        formData.append("title", this.titleInput.getValue());
 
         let fileUploadRequest = Ajax.post("/translate/", {
             dataType: "json",

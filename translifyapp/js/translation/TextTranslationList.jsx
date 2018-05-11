@@ -1,6 +1,7 @@
 import {UI} from "UI";
 import {TextTranslationEntry} from "./TextTranslationEntry";
 import {TextTranslationStore} from "../state/TextTranslationStore";
+import {Ajax} from "Ajax";
 
 
 export class TextTranslationList extends UI.Element {
@@ -11,5 +12,6 @@ export class TextTranslationList extends UI.Element {
     onMount() {
         super.onMount();
         TextTranslationStore.addCreateListener(() => this.redraw());
+        Ajax.postJSON("/user_state/", {});
     }
 }

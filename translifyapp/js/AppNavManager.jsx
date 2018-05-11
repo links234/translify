@@ -23,7 +23,7 @@ class AppNavManager extends NavManager {
         return [
             <NavSection anchor={Direction.LEFT} style={{margin: 0}}>
                 <NavLinkElement value="Home" href="/" />
-                <Button label="Upload image" onClick={() => UploadFilesModal.show()} />
+                {USER.isAuthenticated ? <Button label="Upload image" onClick={() => UploadFilesModal.show()} /> : null}
             </NavSection>
         ];
     }
